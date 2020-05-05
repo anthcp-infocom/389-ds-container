@@ -21,11 +21,12 @@ RUN mkdir -p /data/config && \
     ln -s /data/ssca /etc/dirsrv/ssca && \
     ln -s /data/run /var/run/dirsrv
 
+COPY dscontainer /usr/lib/dirsrv/
+
 # Temporal volumes for each instance
 VOLUME /data
 
 HEALTHCHECK --start-period=5m --timeout=5s --interval=5s --retries=2 \
     CMD /usr/lib/dirsrv/dscontainer -H
 
-#CMD [ "/usr/lib/dirsrv/dscontainer", "-r" ]
-CMD "rm -rf /data/run/* ;  /usr/lib/dirsrv/dscontainer -r ; tail -f /dev/null"
+CMD [ "/usr/lib/dirsrv/dscontainer", "-r" ]
