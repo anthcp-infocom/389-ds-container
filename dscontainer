@@ -33,6 +33,7 @@ import sys
 import subprocess
 import argparse, argcomplete
 from argparse import RawTextHelpFormatter
+from pathlib import Path
 
 
 from lib389 import DirSrv
@@ -64,6 +65,17 @@ log = setup_script_logger("container-init", True)
 def _sigchild_handler(*args, **kwargs):
     # log.debug("Received SIGCHLD ...")
     os.waitpid(-1, os.WNOHANG)
+
+def rmtree(path):
+    path = Path(path) # allow path to be a string
+    assert path.is_dir() # make sure it`s a folder
+    for p in reversed(list(path.glob('**/*'))): # iterate contents from leaves to root
+        if p.is_file():
+           p.unlink()
+        elif p.is_dir():
+           p.rmdir()
+        elif p.is_socket():
+           p.unlink()
 
 def _gen_instance():
     inst = DirSrv(verbose=True)
@@ -278,6 +290,11 @@ binddn = cn=Directory Manager
     # TODO: Should we pass in a loglevel from env?
     log.info("Starting 389-ds-container ...")
 
+    # Check for existing pid file and delete if present as it caused issues with docker startup
+    rundir = "/data/run/lock/server"
+    rmtree(rundir)
+
+
     # We can't use the instance "start" because we need the pid handler so we can do
     # a wait/block on it. That's why we do the Popen here direct.
     global ds_proc
@@ -315,9 +332,10 @@ binddn = cn=Directory Manager
     # Wait on the health check to show we are ready for ldapi.
     failure_count = 0
     max_failure_count = 5
-    # race hazard, wait for 10 seconds to allow spawned ldap subprocess to start.
-    log.info("Waiting 10 seconds for ldap subprocess to start")
-    time.sleep(10)
+ 
+    # race hazard, wait for 5 seconds to allow spawned ldap subprocess to start.
+    log.info("Waiting 5 seconds for ldap subprocess to start")
+    time.sleep(5)
     for i in range(0, max_failure_count):
         status = begin_healthcheck()
         if status is True:
