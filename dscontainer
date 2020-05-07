@@ -66,6 +66,11 @@ def _sigchild_handler(*args, **kwargs):
     # log.debug("Received SIGCHLD ...")
     os.waitpid(-1, os.WNOHANG)
 
+def sigterm_handler(_signo, _stack_frame):
+    # Raises SystemExit(0):
+    log.debug("Received SIGTERM signal in function sigterm_handler")
+    sys.exit(0)
+
 def rmtree(path):
     path = Path(path) # allow path to be a string
     assert path.is_dir() # make sure it`s a folder
@@ -317,17 +322,21 @@ binddn = cn=Directory Manager
     # Setup the process and shutdown handler in an init-esque fashion.
     def kill_ds():
         if ds_proc is None:
+            log.debug("ds_proc is None")
             pass
         else:
             try:
+                log.debug("Sending SIGTERM to ldap process")
                 os.kill(ds_proc.pid, signal.SIGTERM)
             except ProcessLookupError:
+                log.debug("Ldap process has already exited...")
                 # It's already gone ...
                 pass
         log.info("STOPPING: Shutting down 389-ds-container ...")
         # To make sure we really do shutdown, we actually re-block on the proc
         # again here to be sure it's done.
         ds_proc.wait()
+        log.debug("End of ds_proc.wait. Ldap process is now shutdown")
 
     atexit.register(kill_ds)
 
@@ -356,11 +365,14 @@ binddn = cn=Directory Manager
 
     # Now block until we get shutdown! If we are signaled to exit, this
     # will trigger the atexit handler from above.
+
     try:
         ds_proc.wait()
     except KeyboardInterrupt:
         pass
     # THE LETTER OF THE DAY IS C AND THE NUMBER IS 10
+    finally:
+        log.debug("Ds_proc.wait has ended maybe via sigterm_handler initiated sysexit")
 
 
 def begin_healthcheck():
@@ -416,6 +428,7 @@ container host.
     argcomplete.autocomplete(parser)
 
     args = parser.parse_args()
+    signal.signal(signal.SIGTERM, sigterm_handler)
 
     if args.runit:
         begin_magic()
