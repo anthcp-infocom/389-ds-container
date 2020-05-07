@@ -290,10 +290,12 @@ binddn = cn=Directory Manager
     # TODO: Should we pass in a loglevel from env?
     log.info("Starting 389-ds-container ...")
 
-    # Check for existing pid file and delete if present as it caused issues with docker startup
+    # Check for existing lock files and delete if present as it is causing issues with daemon startup
     rundir = "/data/run/lock/server"
-    rmtree(rundir)
-
+    lockdir = Path(rundir)
+    if lockdir.exists():
+        log.info("Clearing stale lock directory...")
+        rmtree(rundir)    
 
     # We can't use the instance "start" because we need the pid handler so we can do
     # a wait/block on it. That's why we do the Popen here direct.
