@@ -6,6 +6,25 @@ The container startup program (dscontainer) was modified to;
 * Added SIGTERM handling to ensure the gracefull shutdown of LDAP process in Docker. This fix stopped the corruption of the LDAP database on container shutdown (why was this missing in the first place?) 
 * Added try/except to healthcheck to catch any "can't talk to LDAP server" that caused pythonic stack dump errors instaed of just returning false!..  
 
+An example docker-compose.yml
+```version: '3'
+
+services:
+    # LDAP server    
+    ldap:
+         environment:
+           - DS_DM_PASSWORD=${DS_DM_PASSWORD}
+         image: infocomsystems/389ds
+         ports:
+             - "389:3389"
+             - "636:3636"
+#         command: /bin/bash -c '/usr/lib/dirsrv/dscontainer -r ; tail -f /dev/null'
+         volumes:
+            - ${CONFIG}:/data:Z
+         stop_grace_period: 1m30s
+```
+Never force this container to shutdown (e.g with a SIGINT) or it may corrupt the LDAP database
+
 This is the output on startup...
 ```ldap_1  | INFO: The 389 Directory Server Container Bootstrap
 ldap_1  | INFO: Inspired by works of: ITS, The University of Adelaide
