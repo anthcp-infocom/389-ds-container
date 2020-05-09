@@ -97,12 +97,12 @@ To finish off the install;
 * Connect to container shell e.g ```docker-compose exec ldap /bin/bash```
 * You can now use the dsconf command to create new backend and users etc
 * Assuming basedn of dc=example,dc=com but of course use your own basedn; ```dsconf localhost backend create --suffix dc=example,dc=com --be-name userRoot``` 
-* Now change ${CONFIG}/config/container.inf basedn entry to match above used basedn
+* In host volume, change ${CONFIG}/config/container.inf basedn entry to match above used basedn
 * Put some test data in the LDAP database; ```dsidm localhost initialise```
 * Create a user; ```dsidm localhost user create --uid william --cn William --displayName 'William Brown' --uidNumber 1000 --gidNumber 1000 --homeDirectory /home/william```
 * List the users; ```dsidm localhost user list```
-* Add a password to a user; ```dsidm localhost account reset_password "uid=william" <newpassword>
-* Change a users password; ```dsidm localhost account change_password "uid=william" <newpassword> <currentpassword>
+* Add a password to a user; ```dsidm localhost account reset_password "uid=william" <newpassword>```
+* Change a users password; ```dsidm localhost account change_password "uid=william" <newpassword> <currentpassword>```
 
 Have a look at https://www.mankier.com/8/dsidm for more info.
 
