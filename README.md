@@ -7,7 +7,8 @@ The container startup program (dscontainer) was modified to;
 * Added try/except to healthcheck to catch any "can't talk to LDAP server" that caused pythonic stack dump errors instaed of just returning false!..  
 
 An example docker-compose.yml
-```version: '3'
+```
+version: '3'
 
 services:
     # LDAP server    
@@ -24,6 +25,12 @@ services:
          stop_grace_period: 1m30s
 ```
 Never force this container to shutdown (e.g with a SIGINT) or it may corrupt the LDAP database
+
+An example .env file
+```
+CONFIG=~/ldapdata
+DS_DM_PASSWORD=youareaplonkerifyouusethis
+```
 
 This is the output on startup...
 ```ldap_1  | INFO: The 389 Directory Server Container Bootstrap
