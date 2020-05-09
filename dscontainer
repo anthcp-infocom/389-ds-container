@@ -379,13 +379,16 @@ binddn = cn=Directory Manager
 def begin_healthcheck():
     # Is there an ns-slapd pid?
     # Can we get ldapi response?
-    inst = _gen_instance()
-    if inst.status() is not True:
-        return False
+    try:
+       inst = _gen_instance()
+       if inst.status() is not True:
+           return False
     # Now do an ldapi check, make sure we are dm.
-    inst.open()
-    if "dn: cn=Directory Manager" == inst.whoami_s():
-        return True
+       inst.open()
+       if "dn: cn=Directory Manager" == inst.whoami_s():
+          return True
+    except:
+       pass
     return False
 
 
