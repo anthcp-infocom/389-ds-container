@@ -96,9 +96,9 @@ ldap_1  | INFO: 389-ds-container started.
 To finish off the install;
 * Connect to the container shell e.g ```docker-compose exec ldap /bin/bash```
 * You can now use the dsconf command to create new backend database.
-* Assuming basedn of dc=example,dc=com but of course use your own basedn; ```dsconf localhost backend create --suffix dc=example,dc=com --be-name userRoot``` 
-* In host volume, change ${CONFIG}/config/container.inf basedn entry to match above used basedn
-* Back in the container shell, put some test data in the LDAP database; ```dsidm localhost initialise```
+* Assuming a basedn of dc=example,dc=com but of course you can use your own basedn; ```dsconf localhost backend create --suffix dc=example,dc=com --be-name userRoot``` 
+* In the host volume, change ${CONFIG}/config/container.inf basedn entry to match above used basedn
+* Back in the container shell, put some test data into the LDAP database; ```dsidm localhost initialise```
 * Create a user; ```dsidm localhost user create --uid william --cn William --displayName 'William Brown' --uidNumber 1000 --gidNumber 1000 --homeDirectory /home/william```
 * List the users; ```dsidm localhost user list```
 * Add a password to a user; ```dsidm localhost account reset_password "uid=william" <newpassword>```
