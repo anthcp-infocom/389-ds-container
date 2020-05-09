@@ -32,7 +32,7 @@ CONFIG=~/ldapdata
 DS_DM_PASSWORD=youareaplonkerifyouusethis
 ```
 
-This is the output on startup...
+This is the output on startup after the first start. On first start you will get a lot more setup with some new passwords setup as well...
 ```ldap_1  | INFO: The 389 Directory Server Container Bootstrap
 ldap_1  | INFO: Inspired by works of: ITS, The University of Adelaide
 ldap_1  | INFO: 389 Directory Server Version: 1.4.3.4
